@@ -97,6 +97,8 @@ map.on('load', () => {
         d3.csv('https://dsc106.com/labs/lab07/data/bluebikes-traffic-2024-03.csv').then(trips => {
             console.log("Loaded Traffic Data:", trips.slice(0, 10));
 
+            let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
+
             // Compute departures and arrivals
             let departures = d3.rollup(trips, v => v.length, d => d.start_station_id);
             let arrivals = d3.rollup(trips, v => v.length, d => d.end_station_id);
@@ -133,6 +135,7 @@ map.on('load', () => {
             // Update circle sizes based on traffic data
             circles
                 .attr('r', d => radiusScale(d.totalTraffic))
+                .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic)) 
                 .each(function(d) {
                     // Add <title> for browser tooltips
                     d3.select(this)
@@ -183,6 +186,7 @@ map.on('load', () => {
                 circles
                     .data(filteredStations)
                     .attr('r', d => radiusScale(d.totalTraffic))
+                    .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic)) 
                     .each(function(d) {
                         d3.select(this)
                             .append('title')

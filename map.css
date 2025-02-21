@@ -23,4 +23,60 @@ html, body {
     pointer-events: auto;
   }
 
+#map circle,
+.legend > div {
+  --color-departures: steelblue;
+  --color-arrivals: darkorange;
+  --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
+}
+
+.legend {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+  align-items: center;
+  margin-block: 1em;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px; /* Rounded corners */
+}
+
+.legend > div[style*="--departure-ratio: 1"] {
+  background-color: var(--color-departures);
+  flex: 1;
+  text-align: left;
+  font-size: 1.2em; /* Big font */
+  font-weight: bold; /* Bold font */
+  color: black; /* White font color */
+  padding: 10px; /* Add padding */
+}
+
+.legend > div[style*="--departure-ratio: 0"] {
+  background-color: var(--color-arrivals);
+  flex: 1;
+  text-align: right;
+  font-size: 1.2em; /* Big font */
+  font-weight: bold; /* Bold font */
+  color: black; /* White font color */
+  padding: 10px; /* Add padding */
+}
+
+.legend > div[style*="--departure-ratio: 0.5"] {
+  background-color: var(--color);
+  flex: 1;
+  text-align: center;
+  font-size: 1.2em; /* Big font */
+  font-weight: bold; /* Bold font */
+  color: black; /* White font color */
+  padding: 10px; /* Add padding */
+}
+
+#map circle {
+  fill: var(--color);
+}
+
   
