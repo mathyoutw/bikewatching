@@ -101,6 +101,12 @@ map.on('load', () => {
             let departures = d3.rollup(trips, v => v.length, d => d.start_station_id);
             let arrivals = d3.rollup(trips, v => v.length, d => d.end_station_id);
 
+            for (let trip of trips) {
+
+                trip.started_at = new Date(trip.started_at);
+                trip.ended_at = new Date(trip.ended_at);
+            }
+
             // Add traffic data to stations
             stations.forEach(station => {
                 let id = station.short_name;
@@ -135,13 +141,15 @@ map.on('load', () => {
                 filteredTrips = timeFilter === -1
                     ? trips
                     : trips.filter((trip) => {
-                        const startedMinutes = minutesSinceMidnight(new Date(trip.started_at));
-                        const endedMinutes = minutesSinceMidnight(new Date(trip.ended_at));
+                        const startedMinutes = minutesSinceMidnight(trip.started_at);
+                        const endedMinutes = minutesSinceMidnight(trip.ended_at);
                         return (
                             Math.abs(startedMinutes - timeFilter) <= 60 ||
                             Math.abs(endedMinutes - timeFilter) <= 60
                         );
                     });
+
+                console.log(filteredTrips.length);
 
                 // Update arrivals and departures based on filtered trips
                 filteredArrivals = d3.rollup(filteredTrips, v => v.length, d => d.start_station_id);
@@ -156,12 +164,11 @@ map.on('load', () => {
                     return clonedStation;
                 });
 
-                console.log("Filtered Stations:", filteredStations);
 
                 // Update circles based on filtered data
                 const radiusScale = d3.scaleSqrt()
-                    .domain([0, d3.max(filteredStations, d => d.totalTraffic)])
-                    .range([0, 25]);
+                    .domain([0, d3.max(stations, d => d.totalTraffic)])
+                    .range(timeFilter === -1 ? [0, 25] : [3, 50]);
 
                 circles
                     .data(filteredStations)
