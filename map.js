@@ -128,7 +128,7 @@ map.on('load', () => {
             console.log("Processed Stations with Traffic:", stations);
 
             // Define scale for circle sizes
-            const radiusScale = d3.scaleSqrt()
+            let radiusScale = d3.scaleSqrt()
                 .domain([0, d3.max(stations, d => d.totalTraffic)])
                 .range([3, 25]);
 
@@ -178,10 +178,15 @@ map.on('load', () => {
                     return clonedStation;
                 });
 
-                // Update circles based on filtered data
-                const radiusScale = d3.scaleSqrt()
-                    .domain([0, d3.max(stations, d => d.totalTraffic)])
-                    .range(timeFilter === -1 ? [3, 25] : [3, 50]);
+                if (timeFilter === -1) {
+                    // Update scale for circle sizes
+                    radiusScale.domain([0, d3.max(filteredStations, d => d.totalTraffic)])
+                               .range([3, 25]);
+                } else {
+                    // Update scale for circle sizes
+                    radiusScale.domain([0, d3.max(stations, d => d.totalTraffic)])
+                               .range([3, 50]);
+                }
 
                 circles
                     .data(filteredStations)
